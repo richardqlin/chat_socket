@@ -21,7 +21,7 @@ class Server:
         # bind to host and port
         self.s.bind((host,port))
         # it makes the server listen to requests coming from other computer on the network
-        self.s.listen(1)
+        self.s.listen(3)
     
     def handler(self,c,a):
         while 1:
