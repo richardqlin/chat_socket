@@ -8,38 +8,61 @@ s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.connect(("192.168.1.78",1234))
 
 window=pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption("Cool Python Game")
+pygame.display.set_caption("client Python Game")
 
 class Player:
-    def __init__(self):
+    def __init__(self,color):
+        self.color = color
         self.x=WIDTH//2
         self.y=HEIGHT//2
     def moveBy(self,x_distance,y_distance):
         self.x += x_distance
         self.y += y_distance
     def draw(self):
-        pygame.draw.rect(window,(0,255,0),(self.x,self.y,20,20))
+        pygame.draw.rect(window,self.color,(self.x,self.y,20,20))
 
-player2=Player()
-player1=Player()
+player2=Player((0,255,0))
+
+player1=Player((255,0,0))
+
+dis_x = dis_y =0
 while 1:
-    
     for event in pygame.event.get():
         if event.type==QUIT:
             pygame.quit()
             exit()
-        if event.type==KEYDOWN:
-            if event.key==K_UP:
-                player1.moveBy(0,-5)
-            elif event.key==K_DOWN:
-                player1.moveBy(0,5)
-            elif event.key==K_LEFT:
-                player1.moveBy(-5,0)
-            elif event.key==K_RIGHT:
-                player1.moveBy(5,0)
-    window.fill((255,255,255))
+        if event.type == KEYDOWN:
+            if event.key == K_UP:
+                dis_y = -1
+            elif event.key == K_DOWN:
+                dis_y = 1
+            elif event.key == K_LEFT:
+                dis_x = -1
+            elif event.key == K_RIGHT:
+                dis_x = 1
+        if event.type == KEYUP:
+            if event.key == K_UP:
+                dis_y = 0
+            elif event.key == K_DOWN:
+                dis_y = 0
+            elif event.key == K_LEFT:
+                dis_x = 0
+            elif event.key == K_RIGHT:
+                dis_x = 0
+
+    d = s.recv(1).decode('utf-8')
+    d =int(d)
+    data = s.recv(d).decode('utf-8')
+
+    data = data.split(' ')
+    x,y = int(data[0]),int(data[1])
+    print(x, y)
+    window.fill((255, 255, 255))
     player1.draw()
+    pygame.draw.rect(window, (0, 255, 0), (x, y, 20, 20))
+    player2.draw()
+    player1.moveBy(dis_x, dis_y)
+    player2.moveBy(x, y)
     pygame.display.update()
-    data = s.recv(2048)
-    print(data)
-    
+
+
