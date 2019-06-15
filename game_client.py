@@ -5,7 +5,7 @@ pygame.init()
 WIDTH=500
 HEIGHT=500
 s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.connect(("192.168.1.78",1234))
+s.connect(("192.168.1.245",1234))
 
 window=pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("client Python Game")
@@ -20,6 +20,10 @@ class Player:
         self.y += y_distance
     def draw(self):
         pygame.draw.rect(window,self.color,(self.x,self.y,20,20))
+
+    def pos(self,x,y):
+        self.x = x
+        self.y = y
 
 player2=Player((0,255,0))
 
@@ -49,20 +53,20 @@ while 1:
                 dis_x = 0
             elif event.key == K_RIGHT:
                 dis_x = 0
-
     d = s.recv(1).decode('utf-8')
     d =int(d)
     data = s.recv(d).decode('utf-8')
-
     data = data.split(' ')
     x,y = int(data[0]),int(data[1])
-    print(x, y)
+    s.sendall(bytes("{} {}".format(player1.x, player1.y), "utf-8"))
     window.fill((255, 255, 255))
     player1.draw()
-    pygame.draw.rect(window, (0, 255, 0), (x, y, 20, 20))
+
     player2.draw()
+    player2.pos(x,y)
     player1.moveBy(dis_x, dis_y)
-    player2.moveBy(x, y)
     pygame.display.update()
+
+
 
 
